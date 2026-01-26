@@ -1,13 +1,10 @@
 package com.endgame.endgameapi.service;
 
 
-
 import com.endgame.endgameapi.dto.GameDTO;
 import com.endgame.endgameapi.dto.RawgResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -60,7 +57,6 @@ public class RawgService {
                 .queryParam("page_size", 10);
         return restTemplate.getForObject(builder.toUriString(), Object.class);
     }
-
 
 
     public Object getGameDetails(Long gameId) {

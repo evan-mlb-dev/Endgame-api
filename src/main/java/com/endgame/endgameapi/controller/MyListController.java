@@ -11,6 +11,7 @@ import java.util.List;
 @RequestMapping("/api/my-list")
 public class MyListController {
     private final GameRepository gameRepository;
+
     public MyListController(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
     }

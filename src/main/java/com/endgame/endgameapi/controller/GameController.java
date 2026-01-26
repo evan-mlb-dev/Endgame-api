@@ -18,13 +18,11 @@ public class GameController {
 
     @PatchMapping("/change/status/{id}")
     public ResponseEntity<Game> changeStatus(@PathVariable Long id, @RequestBody GameStatus newStatus) {
-        return gameRepository.findById(id)
-                .map(game -> {
-                    game.setStatus(newStatus);
-                    gameRepository.save(game);
-                    return ResponseEntity.ok(game);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return gameRepository.findById(id).map(game -> {
+            game.setStatus(newStatus);
+            gameRepository.save(game);
+            return ResponseEntity.ok(game);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
 

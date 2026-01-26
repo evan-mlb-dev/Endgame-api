@@ -11,6 +11,7 @@ public enum GameStatus {
     ON_HOLD("On Hold");
 
     private final String displayName;
+
     GameStatus(String displayName) {
         this.displayName = displayName;
     }
