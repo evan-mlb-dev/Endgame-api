@@ -1,6 +1,6 @@
 package com.endgame.endgameapi.model;
 
-import com.endgame.endgameapi.controller.GameController;
+import com.endgame.endgameapi.controller.RawgController;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Game {
-    private static final Logger logger = LoggerFactory.getLogger(GameController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RawgController.class);
 
 
     @Id

@@ -1,33 +1,31 @@
 package com.endgame.endgameapi.controller;
 
-import com.endgame.endgameapi.service.RawgService;
+import com.endgame.endgameapi.model.Game;
+import com.endgame.endgameapi.model.GameStatus;
+import com.endgame.endgameapi.repository.GameRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/games")
+@RequestMapping("/api/game")
 public class GameController {
-    private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
-    private final RawgService rawgService;
+    private final GameRepository gameRepository;
 
-    public GameController(RawgService rawgService) {
-        this.rawgService = rawgService;
+    public GameController(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
     }
 
-    @GetMapping("/search")
-    public Object search(@RequestParam(required = false) String name) {
-        return rawgService.searchGames(name);
+    @PatchMapping("/change/status/{id}")
+    public ResponseEntity<Game> changeStatus(@PathVariable Long id, @RequestBody GameStatus newStatus) {
+        return gameRepository.findById(id)
+                .map(game -> {
+                    game.setStatus(newStatus);
+                    gameRepository.save(game);
+                    return ResponseEntity.ok(game);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/searchFullData")
-    public Object searchFullData(@RequestParam(required = false) String name) {
-        return rawgService.searchGamesFullData(name);
-    }
 
-    @GetMapping("/searchRandom")
-    public Object searchRandom(@RequestParam(required = false) String name) {
-        return rawgService.searchGamesRandom(name,20);
-    }
 }
