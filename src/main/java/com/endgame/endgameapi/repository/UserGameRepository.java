@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface GameRepository extends JpaRepository<Game, Long> {
+public interface UserGameRepository extends JpaRepository<UserGame, Long> {
     Optional<Game> findByRawgId(Long rawgId);
-
-    boolean existsByRawgId(Long rawgId);
 }

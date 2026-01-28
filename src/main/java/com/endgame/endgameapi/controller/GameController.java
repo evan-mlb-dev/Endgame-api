@@ -1,13 +1,18 @@
 package com.endgame.endgameapi.controller;
 
-import com.endgame.endgameapi.model.Game;
-import com.endgame.endgameapi.model.GameStatus;
-import com.endgame.endgameapi.repository.GameRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
+import com.endgame.endgameapi.model.Game;
+import com.endgame.endgameapi.repository.GameRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/game")
+@RequestMapping("/api/games")
 public class GameController {
 
     private final GameRepository gameRepository;
@@ -16,14 +21,9 @@ public class GameController {
         this.gameRepository = gameRepository;
     }
 
-    @PatchMapping("/change/status/{id}")
-    public ResponseEntity<Game> changeStatus(@PathVariable Long id, @RequestBody GameStatus newStatus) {
-        return gameRepository.findById(id).map(game -> {
-            game.setStatus(newStatus);
-            gameRepository.save(game);
-            return ResponseEntity.ok(game);
-        }).orElse(ResponseEntity.notFound().build());
+
+    @GetMapping
+    public List<Game> getGames() {
+        return gameRepository.findAll();
     }
-
-
 }

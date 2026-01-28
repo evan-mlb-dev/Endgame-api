@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -34,18 +33,16 @@ public class RawgService {
         return (response != null) ? response.getResults() : List.of();
     }
 
-    public List<GameDTO> searchGamesRandom(String search, int size) {
+    public List<GameDTO> getGames(int page, int pageSize) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(URI.create(BASE_URL))
                 .queryParam("key", apiKey)
-                .queryParam("search", search)
-                .queryParam("page_size", size);
+                .queryParam("page",page)
+                .queryParam("page_size", pageSize);
 
         RawgResponseDTO response = restTemplate.getForObject(builder.toUriString(), RawgResponseDTO.class);
 
         if (response != null && response.getResults() != null) {
-            List<GameDTO> games = response.getResults();
-            Collections.shuffle(games);
-            return games;
+            return response.getResults();
         }
         return List.of();
     }

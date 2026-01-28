@@ -1,7 +1,6 @@
 package com.endgame.endgameapi.model;
 
 import com.endgame.endgameapi.controller.RawgController;
-import com.endgame.endgameapi.dto.GameDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,35 +11,37 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
-
 @Entity
-@Table(name = "games")
+@Table(name = "userGames")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Game {
+public class UserGame {
     private static final Logger logger = LoggerFactory.getLogger(RawgController.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(unique = true, nullable = false)
+    private Long userId;
+
+    @Column(unique = true, nullable = false)
+    private Long gameId;
+
     @Column(unique = true, nullable = false)
     private Long rawgId;
 
-    @Column(nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column()
+    private GameStatus status;
 
-    private String backgroundImage;
+    @Column(length = 1000)
+    private String personalNote;
 
-    private Double rating;
-
-    private int playtime;
-
-    private String released;
-
-    private Double HowLongToBeat;
+    private Integer personalRating;
 
     private LocalDateTime createdAt;
 
@@ -49,12 +50,4 @@ public class Game {
         createdAt = LocalDateTime.now();
     }
 
-    public Game(GameDTO dto) {
-        this.rawgId = dto.getRawgId();
-        this.name = dto.getName();
-        this.backgroundImage = dto.getBackgroundImage();
-        this.rating = dto.getRating();
-        this.playtime = dto.getPlaytime();
-        this.released = dto.getReleased();
-    }
 }
