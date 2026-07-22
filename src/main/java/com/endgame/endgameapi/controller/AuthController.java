@@ -15,11 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
-
 
     @Autowired
     private UserRepository userRepository;
@@ -35,20 +36,25 @@ public class AuthController {
 
         // 1. Check user exist
         if (userRepository.findByUsername(request.username()).isPresent()) {
-            return ResponseEntity.badRequest().body("Erreur : user name already taken !");
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "User name already taken !"));
+        }
+        else if (userRepository.findByEmail(request.email()).isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "Email already taken !"));
         }
 
         // 2. create new user
         User user = new User();
         user.setUsername(request.username());
-
-        // hash pwd
+        user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
 
-        // 3. Save new user
         userRepository.save(user);
 
-        return ResponseEntity.ok("New User created !");
+        return ResponseEntity.ok().body(Map.of("message","User created succesfully." )) ;
     }
 
     @PostMapping("/login")
