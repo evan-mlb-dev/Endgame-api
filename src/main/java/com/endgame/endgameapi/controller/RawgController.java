@@ -37,7 +37,7 @@ public class RawgController {
 
 
     @GetMapping("/feed")
-    public List<Game> feed(@RequestParam int page, @RequestParam int pageSize) {
+    public int feed(@RequestParam int page, @RequestParam int pageSize) {
         List<GameDTO> gameDTOS = rawgService.getGames(page,pageSize);
         logger.atInfo().log("{} games found !", gameDTOS.size());
         List<Game> games = gameDTOS.stream()
@@ -45,6 +45,7 @@ public class RawgController {
                 .map(Game::new)
                 .toList();
         logger.atInfo().log("{} new games added !", games.size());
-        return  gameRepository.saveAll(games);
+        gameRepository.saveAll(games);
+        return games.size();
     }
 }

@@ -3,10 +3,7 @@ package com.endgame.endgameapi.controller;
 
 import com.endgame.endgameapi.model.Game;
 import com.endgame.endgameapi.repository.GameRepository;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,9 +18,23 @@ public class GameController {
         this.gameRepository = gameRepository;
     }
 
-
     @GetMapping
-    public List<Game> getGames() {
+    public List<Game> getAll() {
         return gameRepository.findAll();
     }
+
+    @GetMapping("/50R")
+    public List<Game> get50Randoms() {
+        return gameRepository.find50RandomGames();
+    }
+
+    @GetMapping("/search")
+    public List<Game> searchGame(@RequestParam(required = false) String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return gameRepository.find50RandomGames();
+        }
+
+        return gameRepository.findByNameContainingIgnoreCase(name);
+    }
+
 }

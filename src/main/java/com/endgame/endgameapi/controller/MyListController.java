@@ -1,8 +1,8 @@
 package com.endgame.endgameapi.controller;
 
 import com.endgame.endgameapi.model.UserGame;
-import com.endgame.endgameapi.repository.GameRepository;
 import com.endgame.endgameapi.repository.UserGameRepository;
+import com.endgame.endgameapi.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
