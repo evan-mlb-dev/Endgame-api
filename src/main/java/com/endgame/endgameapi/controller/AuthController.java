@@ -29,7 +29,6 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
