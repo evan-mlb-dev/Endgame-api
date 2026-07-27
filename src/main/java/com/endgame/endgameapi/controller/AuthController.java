@@ -5,8 +5,7 @@ import com.endgame.endgameapi.dto.ErrorResponse;
 import com.endgame.endgameapi.dto.RegisterRequest;
 import com.endgame.endgameapi.model.User;
 import com.endgame.endgameapi.repository.UserRepository;
-import com.endgame.endgameapi.service.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.endgame.endgameapi.security.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,8 +47,7 @@ public class AuthController {
             return ResponseEntity
                     .badRequest()
                     .body(Map.of("error", "User name already taken !"));
-        }
-        else if (userRepository.findByEmail(request.email()).isPresent()) {
+        } else if (userRepository.findByEmail(request.email()).isPresent()) {
             return ResponseEntity
                     .badRequest()
                     .body(Map.of("error", "Email already taken !"));
@@ -63,7 +61,7 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok().body(Map.of("message","User created succesfully." )) ;
+        return ResponseEntity.ok().body(Map.of("message", "User created succesfully."));
     }
 
     @PostMapping("/login")
@@ -77,13 +75,13 @@ public class AuthController {
 
             if (principal instanceof User user) {
                 String token = jwtService.generateToken(user);
-                return ResponseEntity.ok(new AuthResponse(token,user.getUsername(), "ROLE_USER"));
+                return ResponseEntity.ok(new AuthResponse(token, user.getUsername(), "ROLE_USER"));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new ErrorResponse(500,"Server Error."));
+                        .body(new ErrorResponse(500, "Server Error."));
             }
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(401,"Bad logins."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(401, "Bad logins."));
         }
     }
 }
