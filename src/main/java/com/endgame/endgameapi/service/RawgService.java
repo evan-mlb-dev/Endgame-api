@@ -15,7 +15,7 @@ import java.util.List;
 public class RawgService {
     private final RestTemplate restTemplate;
     private final String BASE_URL = "https://api.rawg.io/api/games";
-    @Value("${rawg.api.key}")
+    @Value("${RAWG.API.KEY}")
     private String apiKey;
 
 

@@ -1,9 +1,11 @@
 package com.endgame.endgameapi.controller;
 
 import com.endgame.endgameapi.dto.AuthResponse;
+import com.endgame.endgameapi.dto.ErrorResponse;
 import com.endgame.endgameapi.dto.RegisterRequest;
 import com.endgame.endgameapi.model.User;
 import com.endgame.endgameapi.repository.UserRepository;
+import com.endgame.endgameapi.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +24,21 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    // 2. Un seul constructeur qui injecte TOUT d'un coup (pas besoin d'ajouter @Autowired en Spring 4.3+)
+    public AuthController(UserRepository userRepository,
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationManager authenticationManager,
+                          JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -67,13 +76,14 @@ public class AuthController {
             Object principal = authentication.getPrincipal();
 
             if (principal instanceof User user) {
-                return ResponseEntity.ok(new AuthResponse(user.getUsername(), "ROLE_USER"));
+                String token = jwtService.generateToken(user);
+                return ResponseEntity.ok(new AuthResponse(token,user.getUsername(), "ROLE_USER"));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Erreur lors de la récupération du profil utilisateur");
+                        .body(new ErrorResponse(500,"Server Error."));
             }
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid logins");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(401,"Bad logins."));
         }
     }
 }
