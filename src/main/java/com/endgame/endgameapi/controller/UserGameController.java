@@ -3,6 +3,7 @@ package com.endgame.endgameapi.controller;
 import com.endgame.endgameapi.dto.UserGameResponseDto;
 import com.endgame.endgameapi.model.GameStatus;
 import com.endgame.endgameapi.model.User;
+import com.endgame.endgameapi.model.UserGame;
 import com.endgame.endgameapi.repository.GameRepository;
 import com.endgame.endgameapi.repository.UserRepository;
 import com.endgame.endgameapi.service.UserGameService;
@@ -11,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin(origins = "http://localhost:4200")
@@ -27,6 +31,20 @@ public class UserGameController {
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
     }
+
+    @GetMapping
+    public ResponseEntity<?> getUserGames(@AuthenticationPrincipal User user) {
+        Map<GameStatus, List<UserGame>> userGames = userGameService.getUserGames(user.getId());
+        return ResponseEntity.ok(userGames);
+    }
+
+
+    @GetMapping("/counts")
+    public ResponseEntity<?> getUserGamesCounts(@AuthenticationPrincipal User user) {
+        Map<GameStatus, Long> userGamesCounts = userGameService.getGameStatusCountsForUser(user.getId());
+        return ResponseEntity.ok(userGamesCounts);
+    }
+
 
     @PostMapping
     public ResponseEntity<?> addUserGame(

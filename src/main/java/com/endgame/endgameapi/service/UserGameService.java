@@ -9,7 +9,10 @@ import com.endgame.endgameapi.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -47,4 +50,23 @@ public class UserGameService {
                 .build();
         userGameRepository.save(newGame);
     }
+
+    public Map<GameStatus, List<UserGame>> getUserGames(Long userId) {
+        List<UserGame> userGames = userGameRepository.findByUserId(userId);
+        return userGames.stream()
+                .collect(Collectors.groupingBy(UserGame::getStatus));
+    }
+
+    public Map<GameStatus, Long> getGameStatusCountsForUser(Long userId) {
+        List<Object[]> results = userGameRepository.countUserGamesByStatus(userId);
+
+        // List<Object[]> to Map<GameStatus, Long>
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (GameStatus) result[0],
+                        result -> (Long) result[1]
+                ));
+    }
+
+
 }
