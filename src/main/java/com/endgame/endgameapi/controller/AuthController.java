@@ -27,8 +27,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
-    // 2. Un seul constructeur qui injecte TOUT d'un coup (pas besoin d'ajouter @Autowired en Spring 4.3+)
+    
     public AuthController(UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
