@@ -33,8 +33,14 @@ public class UserGameController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getUserGames(@AuthenticationPrincipal User user) {
-        Map<GameStatus, List<UserGame>> userGames = userGameService.getUserGames(user.getId());
+    public ResponseEntity<?> getUserGames(@AuthenticationPrincipal User user, @RequestParam(required = false) GameStatus status) {
+        Map<GameStatus, List<UserGame>> userGames;
+        if (status != null) {
+            userGames = userGameService.getUserGamesWithStatus(user.getId(), status);
+        } else {
+            userGames = userGameService.getUserGames(user.getId());
+        }
+
         return ResponseEntity.ok(userGames);
     }
 

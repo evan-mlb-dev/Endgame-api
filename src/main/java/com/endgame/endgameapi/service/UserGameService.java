@@ -57,6 +57,12 @@ public class UserGameService {
                 .collect(Collectors.groupingBy(UserGame::getStatus));
     }
 
+    public Map<GameStatus, List<UserGame>> getUserGamesWithStatus(Long userId, GameStatus status) {
+        List<UserGame> userGames = userGameRepository.findByUserIdAndStatus(userId, status);
+        return userGames.stream()
+                .collect(Collectors.groupingBy(UserGame::getStatus));
+    }
+
     public Map<GameStatus, Long> getGameStatusCountsForUser(Long userId) {
         List<Object[]> results = userGameRepository.countUserGamesByStatus(userId);
 
