@@ -4,8 +4,8 @@ import com.endgame.endgameapi.dto.UserGameResponseDto;
 import com.endgame.endgameapi.model.GameStatus;
 import com.endgame.endgameapi.model.User;
 import com.endgame.endgameapi.model.UserGame;
-import com.endgame.endgameapi.repository.GameRepository;
-import com.endgame.endgameapi.repository.UserRepository;
+import com.endgame.endgameapi.service.GameService;
+import com.endgame.endgameapi.service.UserDetailsService;
 import com.endgame.endgameapi.service.UserGameService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,14 +22,14 @@ import java.util.Map;
 @RequestMapping("/api/usergame")
 public class UserGameController {
 
-    public final UserGameService userGameService;
-    public final UserRepository userRepository;
-    public final GameRepository gameRepository;
+    private final UserGameService userGameService;
+    private final GameService gameService;
+    private final UserDetailsService userService;
 
-    public UserGameController(UserGameService userGameService, UserRepository userRepository, GameRepository gameRepository) {
+    public UserGameController(UserGameService userGameService, UserDetailsService userService, GameService gameService) {
         this.userGameService = userGameService;
-        this.userRepository = userRepository;
-        this.gameRepository = gameRepository;
+        this.gameService = gameService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -70,13 +70,13 @@ public class UserGameController {
         Long userId = user.getId();
 
         // 2. Validate User existence
-        if (!userRepository.existsById(userId)) {
+        if (!userService.exist(userId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(String.format("User not found with ID: %d", userId));
         }
 
         // 3. Validate Game existence
-        if (!gameRepository.existsById(gameId)) {
+        if (!gameService.exist(gameId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(String.format("Game not found with ID: %s", gameId));
         }

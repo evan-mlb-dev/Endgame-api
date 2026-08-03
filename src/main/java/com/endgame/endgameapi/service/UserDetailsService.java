@@ -17,4 +17,9 @@ public class UserDetailsService implements org.springframework.security.core.use
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found : " + username));
     }
+
+    public boolean exist(Long userId) {
+        return userRepository.existsById(userId);
+    }
+
 }
