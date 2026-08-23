@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Service 1 : PostgreSQL BDD
+  postgres:
+    image: postgres:16-alpine
+    container_name: endgame-postgres
+    environment:
+      POSTGRES_DB: endgame
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Service 2 : Spring Boot Application
+  app:
+    build: .
+    container_name: endgame-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/endgame
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      RAWG_API_KEY: ${RAWG_API_KEY}
+      RAWG_API_URL: ${RAWG_API_URL}
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
