@@ -16,8 +16,10 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     boolean existsById(Long id);
 
-    @Query(value = "SELECT * FROM games WHERE rating > 3.1 ORDER BY RAND() LIMIT 50", nativeQuery = true)
+    @Query(value = "SELECT * FROM games WHERE rating > 3.1 ORDER BY RANDOM() LIMIT 50", nativeQuery = true)
     List<Game> find50RandomGames();
 
     List<Game> findByNameContainingIgnoreCase(String name);
+
+    List<Game> findByIdIn(List<Long> gameIds);
 }
