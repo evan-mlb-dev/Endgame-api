@@ -3,8 +3,10 @@ package com.endgame.endgameapi.controller;
 
 import com.endgame.endgameapi.model.Game;
 import com.endgame.endgameapi.repository.GameRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -18,9 +20,13 @@ public class GameController {
         this.gameRepository = gameRepository;
     }
 
-    @GetMapping
-    public List<Game> getAll() {
-        return gameRepository.findAll();
+    @GetMapping("/by-ids")
+    public ResponseEntity<List<Game>> getByIds(@RequestParam(name = "ids") List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        List<Game> games = gameRepository.findByIdIn(ids);
+        return ResponseEntity.ok(games);
     }
 
     @GetMapping("/50R")

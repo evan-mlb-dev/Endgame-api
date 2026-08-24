@@ -1,8 +1,11 @@
 package com.endgame.endgameapi.service;
 
 
+import com.endgame.endgameapi.model.Game;
 import com.endgame.endgameapi.repository.GameRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GameService {
@@ -14,5 +17,9 @@ public class GameService {
 
     public boolean exist(Long gameId) {
         return this.gameRepository.existsById(gameId);
+    }
+
+    public List<Game> getGameList(List<Long> gameIds) {
+        return gameRepository.findByIdIn(gameIds);
     }
 }
