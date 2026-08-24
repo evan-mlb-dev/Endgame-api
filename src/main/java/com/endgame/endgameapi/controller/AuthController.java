@@ -27,7 +27,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    
+
     public AuthController(UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
@@ -60,7 +60,10 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok().body(Map.of("message", "User created succesfully."));
+        // 3. Generate token & return AuthResponse (identical to /login)
+        String token = jwtService.generateToken(user);
+
+        return ResponseEntity.ok(new AuthResponse(token, user.getUsername(), "ROLE_USER"));
     }
 
     @PostMapping("/login")
