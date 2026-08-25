@@ -4,8 +4,8 @@ import com.endgame.endgameapi.dto.UserGameResponseDto;
 import com.endgame.endgameapi.model.GameStatus;
 import com.endgame.endgameapi.model.User;
 import com.endgame.endgameapi.model.UserGame;
+import com.endgame.endgameapi.service.CustomUserDetailsService;
 import com.endgame.endgameapi.service.GameService;
-import com.endgame.endgameapi.service.UserDetailsService;
 import com.endgame.endgameapi.service.UserGameService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,9 +24,9 @@ public class UserGameController {
 
     private final UserGameService userGameService;
     private final GameService gameService;
-    private final UserDetailsService userService;
+    private final CustomUserDetailsService userService;
 
-    public UserGameController(UserGameService userGameService, UserDetailsService userService, GameService gameService) {
+    public UserGameController(UserGameService userGameService, CustomUserDetailsService userService, GameService gameService) {
         this.userGameService = userGameService;
         this.gameService = gameService;
         this.userService = userService;
