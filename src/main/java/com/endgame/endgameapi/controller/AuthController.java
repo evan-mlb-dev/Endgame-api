@@ -2,10 +2,12 @@ package com.endgame.endgameapi.controller;
 
 import com.endgame.endgameapi.dto.AuthResponse;
 import com.endgame.endgameapi.dto.ErrorResponse;
+import com.endgame.endgameapi.dto.GoogleTokenDto;
 import com.endgame.endgameapi.dto.RegisterRequest;
 import com.endgame.endgameapi.model.User;
 import com.endgame.endgameapi.repository.UserRepository;
 import com.endgame.endgameapi.security.JwtService;
+import com.endgame.endgameapi.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,28 +16,33 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final AuthService authService;
 
     public AuthController(UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
-                          JwtService jwtService) {
+                          JwtService jwtService,
+                          AuthService authService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.authService = authService;
     }
 
     @PostMapping("/register")
@@ -84,6 +91,17 @@ public class AuthController {
             }
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(401, "Bad logins."));
+        }
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleTokenDto googleTokenDto) {
+        try {
+            AuthResponse authResponse = authService.loginWithGoogle(googleTokenDto.getToken());
+            return ResponseEntity.ok(authResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(401, "Google authentication failed."));
         }
     }
 }

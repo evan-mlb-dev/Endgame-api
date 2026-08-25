@@ -26,11 +26,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
