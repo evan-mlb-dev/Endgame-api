@@ -11,7 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "games")
@@ -36,6 +37,19 @@ public class Game {
 
     private Double rating;
 
+
+    @ElementCollection
+    @CollectionTable(name = "game_genres", joinColumns = @JoinColumn(name = "game_id"))
+    @Column(name = "genre")
+    @Builder.Default
+    private List<String> genres = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "game_tags", joinColumns = @JoinColumn(name = "game_id"))
+    @Column(name = "tag")
+    @Builder.Default
+    private List<String> tags = new ArrayList<>();
+
     private int playtime;
 
     private String released;
@@ -44,11 +58,6 @@ public class Game {
 
     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
-
     public Game(GameDTO dto) {
         this.rawgId = dto.getRawgId();
         this.name = dto.getName();
@@ -56,5 +65,12 @@ public class Game {
         this.rating = dto.getRating();
         this.playtime = dto.getPlaytime();
         this.released = dto.getReleased();
+        this.genres = dto.getGenres();
+        this.tags = dto.getTags();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 }

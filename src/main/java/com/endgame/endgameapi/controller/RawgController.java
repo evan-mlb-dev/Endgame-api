@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -38,14 +39,27 @@ public class RawgController {
 
     @GetMapping("/feed")
     public int feed(@RequestParam int page, @RequestParam int pageSize) {
-        List<GameDTO> gameDTOS = rawgService.getGames(page,pageSize);
-        logger.atInfo().log("{} games found !", gameDTOS.size());
-        List<Game> games = gameDTOS.stream()
-                .filter(dto -> !gameRepository.existsByRawgId(dto.getRawgId()))
-                .map(Game::new)
-                .toList();
-        logger.atInfo().log("{} new games added !", games.size());
-        gameRepository.saveAll(games);
-        return games.size();
+        List<GameDTO> gameDTOS = rawgService.getGames(page, pageSize);
+        logger.atInfo().log("{} games fetched from RAWG !", gameDTOS.size());
+
+        List<Game> gamesToSave = gameDTOS.stream().map(dto -> {
+            return gameRepository.findByRawgId(dto.getRawgId())
+                    .map(existingGame -> {
+                        existingGame.setName(dto.getName());
+                        existingGame.setBackgroundImage(dto.getBackgroundImage());
+                        existingGame.setRating(dto.getRating());
+                        existingGame.setPlaytime(dto.getPlaytime());
+                        existingGame.setReleased(dto.getReleased());
+                        existingGame.setGenres(dto.getGenres());
+                        existingGame.setTags(dto.getTags());
+                        return existingGame;
+                    })
+                    .orElseGet(() -> new Game(dto));
+        }).toList();
+
+        gameRepository.saveAll(gamesToSave);
+        logger.atInfo().log("{} games processed (added/updated) !", gamesToSave.size());
+
+        return gamesToSave.size();
     }
 }
