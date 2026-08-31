@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/usergame")
 public class UserGameController {
