@@ -57,8 +57,7 @@ public class UserGameController {
             @RequestParam Long gameId,
             @RequestParam GameStatus newStatus
     ) {
-
-        log.info("ok");
+        
 
         // 1. Check authentication & required params
         if (user == null || gameId == null) {
