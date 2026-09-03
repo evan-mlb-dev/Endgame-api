@@ -1,6 +1,7 @@
 package com.endgame.endgameapi.security;
 
 import com.endgame.endgameapi.dto.AuthResponse;
+import com.endgame.endgameapi.dto.RegisterRequest;
 import com.endgame.endgameapi.model.Role;
 import com.endgame.endgameapi.model.User;
 import com.endgame.endgameapi.repository.UserRepository;
@@ -12,6 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +32,46 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     @Value("${google.client.id}")
     private String googleClientId;
+
+    public AuthResponse register(RegisterRequest request) {
+        if (userRepository.findByUsername(request.username()).isPresent()) {
+            throw new IllegalArgumentException("User name already taken !");
+        }
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new IllegalArgumentException("Email already taken !");
+        }
+
+        User user = new User();
+        user.setUsername(request.username());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setRole(Role.USER);
+
+        userRepository.save(user);
+
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(token, user.getUsername(), "ROLE_USER");
+    }
+
+    public AuthResponse login(RegisterRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.username(), request.password())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User user) {
+            String token = jwtService.generateToken(user);
+            return new AuthResponse(token, user.getUsername(), "ROLE_USER");
+        } else {
+            throw new IllegalStateException("Authentication principal is not valid");
+        }
+    }
 
     public AuthResponse loginWithGoogle(String idTokenString) throws Exception {
         log.info("Initiating Google ID token verification...");
