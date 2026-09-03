@@ -20,10 +20,24 @@ public class UserGameService {
 
     private final UserGameRepository userGameRepository;
 
-
     public UserGameService(UserGameRepository userGameRepository, UserRepository userRepository, GameRepository gameRepository) {
         this.userGameRepository = userGameRepository;
+    }
 
+    public List<UserGame> getAllUserGames() {
+        return userGameRepository.findAll();
+    }
+
+    public UserGame saveUserGame(UserGame userGame) {
+        return userGameRepository.save(userGame);
+    }
+
+    public boolean removeUserGame(Long id) {
+        if (userGameRepository.existsById(id)) {
+            userGameRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public void addToUserList(Long userId, Long gameId, GameStatus gameStatus) {
@@ -40,7 +54,6 @@ public class UserGameService {
     private void updateUserGameStatus(UserGame userGame, GameStatus gameStatus) {
         userGame.setStatus(gameStatus);
     }
-
 
     public void createUserGame(Long userId, UserGameDTO dto) {
         UserGame newGame = UserGame.builder()
@@ -66,13 +79,10 @@ public class UserGameService {
     public Map<GameStatus, Long> getGameStatusCountsForUser(Long userId) {
         List<Object[]> results = userGameRepository.countUserGamesByStatus(userId);
 
-        // List<Object[]> to Map<GameStatus, Long>
         return results.stream()
                 .collect(Collectors.toMap(
                         result -> (GameStatus) result[0],
                         result -> (Long) result[1]
                 ));
     }
-
-
 }
