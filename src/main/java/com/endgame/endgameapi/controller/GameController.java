@@ -1,48 +1,38 @@
 package com.endgame.endgameapi.controller;
 
-
 import com.endgame.endgameapi.model.Game;
-import com.endgame.endgameapi.repository.GameRepository;
+import com.endgame.endgameapi.service.GameService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/games")
 public class GameController {
 
-    private final GameRepository gameRepository;
+    private final GameService gameService;
 
-    public GameController(GameRepository gameRepository) {
-        this.gameRepository = gameRepository;
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
     }
 
     @GetMapping("/by-ids")
-    public ResponseEntity<List<Game>> getByIds(@RequestParam(name = "ids") List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-        List<Game> games = gameRepository.findByIdIn(ids);
+    public ResponseEntity<List<Game>> getByIds(@RequestParam(name = "ids", required = false) List<Long> ids) {
+        List<Game> games = gameService.getGameList(ids);
         return ResponseEntity.ok(games);
     }
 
     @GetMapping("/50R")
-    public List<Game> get50Randoms() {
-        return gameRepository.find50RandomGames();
+    public ResponseEntity<List<Game>> get50Randoms() {
+        return ResponseEntity.ok(gameService.getRandomGames());
     }
 
     @GetMapping("/search")
-    public List<Game> searchGame(@RequestParam(required = false) String name) {
-        if (name == null || name.trim().isEmpty()) {
-            return gameRepository.find50RandomGames();
-        }
-
-        return gameRepository.findByNameContainingIgnoreCase(name);
+    public ResponseEntity<List<Game>> searchGame(@RequestParam(required = false) String name) {
+        return ResponseEntity.ok(gameService.searchGameByName(name));
     }
-
 }
